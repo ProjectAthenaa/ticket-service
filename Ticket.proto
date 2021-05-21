@@ -1,0 +1,40 @@
+syntax="proto3";
+
+package ticket;
+
+option go_package="main/ticket";
+
+service Ticket{
+  rpc Deobfuscate(DeobfsucateRequest) returns (Hash);
+  rpc GenerateCookie(GenerateCookieRequest) returns (Cookie);
+}
+
+message Hash{
+  string Value = 1;
+}
+
+message Cookie{
+  string Value = 1;
+}
+
+message Proxy{
+  string IP = 1;
+  string Port = 2;
+  optional string Username = 3;
+  optional string Password = 4;
+}
+
+enum AGENT{
+  BROWSER = 0;
+  MOBILE = 1;
+}
+
+message DeobfsucateRequest{
+  Proxy Proxy = 1;
+  AGENT Agent = 2;
+}
+
+message GenerateCookieRequest{
+  Proxy Proxy = 1;
+  string Hash = 2;
+}

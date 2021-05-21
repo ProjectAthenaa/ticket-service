@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ticket-service
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3000
+      targetPort: 3000
+  selector:
+    app: ticket
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ticket
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ticket
+  template:
+    metadata:
+      labels:
+        app: ticket
+    spec:
+      containers:
+        - name: ticket
+          image: myregistry.com/antibots/ticket:latest
+          imagePullPolicy: "Always"
+          ports:
+            - containerPort: 3000
+          env:
+            - name: ELASTIC_APM_SERVER
+              value: https://4f8d53c3f63f4c138ff4367b7ebc3967.apm.us-east-1.aws.cloud.es.io:443
+            - name: ELASTIC_APM_SERVICE_NAME
+              value: Ticket Service
+            - name: ELASTIC_APM_SECRET_TOKEN
+              value: aBl5cy0EpPbRDLEC6U
+            - name: ELASTIC_APM_ENVIRONMENT
+              value: DEV
+            - name: REDIS_URL
+              value: rediss://default:o6f56b0i536gpbr3@test-redis-do-user-9223163-0.b.db.ondigitalocean.com:25061
+            - name: PG_URL
+              value: postgresql://doadmin:g2p9clpmybup8cq4@test-auth-do-user-9223163-0.b.db.ondigitalocean.com:25060/defaultdb
