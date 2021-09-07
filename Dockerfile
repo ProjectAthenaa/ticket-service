@@ -5,7 +5,6 @@ RUN git config --global url."https://${GH_TOKEN}:x-oauth-basic@github.com/Projec
 RUN mkdir /app
 ADD . /app
 WORKDIR /app
-RUN --mount=type=cache,target=/root/.cache/go-build
 
 ENV REDIS_URL=rediss://default:kulqkv6en3um9u09@athena-redis-do-user-9223163-0.b.db.ondigitalocean.com:25061
 
