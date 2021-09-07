@@ -6,8 +6,6 @@ RUN mkdir /app
 ADD . /app
 WORKDIR /app
 
-#ENV REDIS_URL=rediss://default:kulqkv6en3um9u09@athena-redis-do-user-9223163-0.b.db.ondigitalocean.com:25061
-
 #RUN go test -v .
 
 RUN go build -ldflags "-s -w" -o ticket
@@ -17,6 +15,8 @@ RUN go build -ldflags "-s -w" -o ticket
 FROM debian:buster-slim
 WORKDIR /app
 COPY --from=build-env /app/ticket /app/
+
+ENV REDIS_URL=rediss://default:kulqkv6en3um9u09@athena-redis-do-user-9223163-0.b.db.ondigitalocean.com:25061
 
 EXPOSE 3000 3000
 
