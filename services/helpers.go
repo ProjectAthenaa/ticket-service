@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"github.com/ProjectAthenaa/sonic-core/fasttls"
 	"github.com/ProjectAthenaa/sonic-core/fasttls/tls"
+	"github.com/prometheus/common/log"
 )
 
 var client = fasttls.NewClient(tls.HelloChrome_91, nil)
@@ -12,6 +13,7 @@ var client = fasttls.NewClient(tls.HelloChrome_91, nil)
 func getTicketJS(proxy *string) (string, string, error) {
 	req, err := client.NewRequest("GET", "https://www.supremenewyork.com/ticket.js", nil)
 	if err != nil {
+		log.Error("create req error: ", err)
 		return "", "", err
 	}
 
@@ -19,6 +21,7 @@ func getTicketJS(proxy *string) (string, string, error) {
 
 	resp, err := client.Do(req)
 	if err != nil {
+		log.Error("do req error: ", err)
 		return "", "", err
 	}
 

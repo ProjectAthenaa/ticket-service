@@ -1,20 +1,24 @@
-FROM golang:1.16.0-buster
-
-ENV ELASTIC_APM_SERVER="https://4f8d53c3f63f4c138ff4367b7ebc3967.apm.us-east-1.aws.cloud.es.io:443"
-ENV ELASTIC_APM_SERVICE_NAME="Ticket Service"
-ENV ELASTIC_APM_SECRET_TOKEN="aBl5cy0EpPbRDLEC6U"
-ENV ELASTIC_APM_ENVIRONMENT="DEV"
-ENV REDIS_URL="rediss://default:o6f56b0i536gpbr3@test-redis-do-user-9223163-0.b.db.ondigitalocean.com:25061"
-ENV PG_URL="postgresql://doadmin:g2p9clpmybup8cq4@test-auth-do-user-9223163-0.b.db.ondigitalocean.com:25060/defaultdb"
-
+#build stage
+FROM golang:1.16.7-buster as build-env
+ARG GH_TOKEN
+RUN git config --global url."https://${GH_TOKEN}:x-oauth-basic@github.com/ProjectAthenaa".insteadOf "https://github.com/ProjectAthenaa"
 RUN mkdir /app
-
-ADD ./src /app
-
+ADD . /app
 WORKDIR /app
+RUN --mount=type=cache,target=/root/.cache/go-build
 
-RUN go build .
+ENV REDIS_URL=rediss://default:kulqkv6en3um9u09@athena-redis-do-user-9223163-0.b.db.ondigitalocean.com:25061
+
+RUN go test -v .
+
+RUN go build -ldflags "-s -w" -o ticket
+
+
+# final stage
+FROM debian:buster-slim
+WORKDIR /app
+COPY --from=build-env /app/ticket /app/
 
 EXPOSE 3000 3000
 
-CMD["app/main"]
+ENTRYPOINT ./ticket

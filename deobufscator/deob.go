@@ -1,11 +1,10 @@
 package deob
 
 import (
-	"github.com/ProjectAthenaa/ticket-service/models"
 	"strings"
 )
 
-func GetVersion(scriptin, hash string) *models.Version {
+func Process(scriptin, hash string) *Version {
 	enckey := [][]string{}
 	deckey := [][]string{}
 	userflags := []string{}
@@ -44,7 +43,7 @@ func GetVersion(scriptin, hash string) *models.Version {
 		}
 	}
 
-	version := &models.Version{
+	version := &Version{
 		EncKeys: stringarrtointnested(enckey),
 		DecKeys: stringarrtointnested(deckey),
 		Flags:   stringarrtoint(userflags),

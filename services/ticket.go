@@ -3,10 +3,9 @@ package services
 import (
 	"context"
 	"errors"
-	protos "github.com/ProjectAthenaa/sonic-core/sonic/antibots/ticket/protos"
+	protos "github.com/ProjectAthenaa/sonic-core/sonic/antibots/ticket"
 	"github.com/ProjectAthenaa/ticket-service/aes"
 	deob "github.com/ProjectAthenaa/ticket-service/deobufscator"
-	"github.com/ProjectAthenaa/ticket-service/models"
 )
 
 type Server struct {
@@ -19,11 +18,11 @@ func (s Server) Deobfuscate(ctx context.Context, request *protos.DeobfuscateRequ
 		return nil, errors.New("ERROR_RETRIEVING")
 	}
 
-	if v, _ := models.GetVersion(ticketHash); v != nil {
+	if v, _ := deob.GetVersion(ticketHash); v != nil {
 		return &protos.Hash{Value: v.Hash}, nil
 	}
 
-	version := deob.GetVersion(ticketjs, ticketHash)
+	version := deob.Process(ticketjs, ticketHash)
 
 	version.Save()
 
@@ -31,7 +30,7 @@ func (s Server) Deobfuscate(ctx context.Context, request *protos.DeobfuscateRequ
 }
 
 func (s Server) GenerateCookie(ctx context.Context, hash *protos.GenerateCookieRequest) (*protos.Cookie, error) {
-	version, err := models.GetVersion(hash.Hash)
+	version, err := deob.GetVersion(hash.Hash)
 	if err != nil {
 		return nil, err
 	}

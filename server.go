@@ -1,7 +1,7 @@
 package main
 
 import (
-	protos "github.com/ProjectAthenaa/sonic-core/sonic/antibots/ticket/protos"
+	protos "github.com/ProjectAthenaa/sonic-core/sonic/antibots/ticket"
 	ticket "github.com/ProjectAthenaa/ticket-service/services"
 	"google.golang.org/grpc"
 	"log"

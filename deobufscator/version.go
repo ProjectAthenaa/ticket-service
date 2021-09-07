@@ -1,4 +1,4 @@
-package models
+package deob
 
 import (
 	"context"
@@ -6,15 +6,18 @@ import (
 	"github.com/ProjectAthenaa/sonic-core/fasttls"
 	"github.com/ProjectAthenaa/sonic-core/sonic/core"
 	"github.com/ProjectAthenaa/ticket-service/aes"
-	deob "github.com/ProjectAthenaa/ticket-service/deobufscator"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/prometheus/common/log"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"regexp"
 	"time"
 )
 
-var json = jsoniter.ConfigFastest
+var (
+	liveJsonRe = regexp.MustCompile(`"v":"(\w+)"`)
+	json       = jsoniter.ConfigFastest
+)
 
 type Version struct {
 	EncKeys [][]int32 `json:"enc_keys"`
@@ -30,7 +33,7 @@ func (v *Version) Save() {
 }
 
 func (v *Version) GetLiveJSON(proxy *string, c *fasttls.Client) (string, error) {
-	cparamValue := aes.Encrypt(deob.Cparamarray(), aes.GenIV(), v.EncKeys)
+	cparamValue := aes.Encrypt(Cparamarray(), aes.GenIV(), v.EncKeys)
 
 	req, err := c.NewRequest("GET", fmt.Sprintf("https://www.supremenewyork.com/live.json?%s=%s", v.CParam, cparamValue), nil)
 	if err != nil {
@@ -42,7 +45,7 @@ func (v *Version) GetLiveJSON(proxy *string, c *fasttls.Client) (string, error) 
 		return "", err
 	}
 
-	return string(res.Body), nil
+	return liveJsonRe.FindStringSubmatch(string(res.Body))[1], nil
 }
 
 func GetVersion(hash string) (*Version, error) {
