@@ -17,7 +17,6 @@ func (s Server) Deobfuscate(ctx context.Context, request *protos.DeobfuscateRequ
 	if err != nil {
 		return nil, errors.New("ERROR_RETRIEVING")
 	}
-
 	if v, _ := deob.GetVersion(ticketHash); v != nil {
 		return &protos.Hash{Value: v.Hash}, nil
 	}

@@ -47,6 +47,7 @@ func TestTicket(t *testing.T) {
 		t.Fatal(err)
 	}
 
+
 	cookie, err := client.GenerateCookie(context.Background(), &protos.GenerateCookieRequest{Proxy: "1moewci2:4k7cvljz@178.159.147.248:65112", Hash: hash.Value})
 	if err != nil {
 		t.Fatal(err)
