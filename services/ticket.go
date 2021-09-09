@@ -39,10 +39,20 @@ func (s Server) GenerateCookie(ctx context.Context, hash *protos.GenerateCookieR
 		return nil, err
 	}
 
-	f := aes.Decrypt(livejson, version.DecKeys)[:48]
-	f = append(f, version.Flags[:64]...)
-	f = append(f, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16)
-	cookie := aes.Encrypt(f, aes.GenIV(), version.EncKeys)
+	var cookie string
+
+	switch len(version.Flags) {
+	case 72:
+		f := aes.Decrypt(livejson, version.DecKeys)[:48]
+		f = append(f, version.Flags...)
+		f = append(f, 8, 8, 8, 8, 8, 8, 8, 8)
+		cookie = aes.Encrypt(f, aes.GenIV(), version.EncKeys)
+	case 64:
+		f := aes.Decrypt(livejson, version.DecKeys)[:48]
+		f = append(f, version.Flags...)
+		f = append(f, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16)
+		cookie = aes.Encrypt(f, aes.GenIV(), version.EncKeys)
+	}
 
 	return &protos.Cookie{Value: cookie}, nil
 }
